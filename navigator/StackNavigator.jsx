@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react'
 import HomeScreen from '../screens/HomeScreen';
-import SearchScreen from '../screens/SearchScreen';
+import FavoriteScreen from '../screens/FavoriteScreen';
 import WatchDetailsScreen from '../screens/DetailsScreen';
 const Stack = createStackNavigator();
 
@@ -15,15 +15,34 @@ const MainStackNavigator = () => {
           }
         }
         name="home-screen" component={HomeScreen} />
-      <Stack.Screen name="Watch Details" component={WatchDetailsScreen} />
+      <Stack.Screen
+      options={
+        {
+          headerShown: false
+        }
+      }
+      name="Watch Details" component={WatchDetailsScreen} />
     </Stack.Navigator>
   )
 }
 
-const SearchStackNavigator = () => {
+const FavoriteStackNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="search-screen" component={SearchScreen} />
+      <Stack.Screen
+      options={
+        {
+          headerShown: false
+        }
+      }
+      name="Favorite" component={FavoriteScreen} />
+      <Stack.Screen
+      options={
+        {
+          headerShown: false
+        }
+      }
+      name="Watch Details" component={WatchDetailsScreen} />
     </Stack.Navigator>
   )
 }
@@ -39,4 +58,4 @@ const SearchStackNavigator = () => {
 
 
 
-export { MainStackNavigator, SearchStackNavigator }
+export { MainStackNavigator, FavoriteStackNavigator }

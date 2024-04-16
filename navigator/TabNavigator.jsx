@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import { MainStackNavigator, SearchStackNavigator } from "./StackNavigator";
+import { FavoriteStackNavigator, MainStackNavigator } from "./StackNavigator";
 import { MaterialIcons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
@@ -26,7 +26,7 @@ const TabNavigator = () => {
             <MaterialIcons name="favorite" size={24} color={color} />
           ),
         }}
-        name="search" component={SearchStackNavigator} />
+        name="search" component={FavoriteStackNavigator} />
     </Tab.Navigator>
   )
 }

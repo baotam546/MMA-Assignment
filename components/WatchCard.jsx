@@ -1,5 +1,6 @@
 import {
   Dimensions,
+  Image,
   StyleSheet,
   Text,
   Touchable,
@@ -8,95 +9,94 @@ import {
 } from "react-native";
 import React from "react";
 import { Card } from "@rneui/themed";
-import { Image } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
+import storage from "../utils/storage";
+
 
 const { width, height } = Dimensions.get("window");
-const WatchCard = ({
-  id,
-  name,
-  price,
-  image,
-  watchDescription,
-  brandName,
-  feedback,
-}) => {
+const WatchCard = ({item}) => {
   const navigation = useNavigation();
-  const watchDetails = {
-    id: id,
-    name: name,
-    price: price,
-    image: image,   
-    watchDescription: watchDescription,
-    brandName: brandName,
-    feedback: feedback,
-
-  };
-  
+  const onToggleFavorite = (watch) => {
+    c
+    storage.save({
+      key: 'favorList',
+      data: {
+        watchList: watch,
+      },
+    })
+  }
 
   return (
     <TouchableOpacity
-        onPress={() => {
-            navigation.navigate("details-screen", watchDetails);
-        }}
-    >
-      <View style={styles.Card} key={id}>
-        <View style={{ position: "relative", alignItems: "center" }}>
-          <Image
-            style={styles.image}
-            resizeMode="contain"
-            source={{ uri: image }}
-          />
-        </View>
-        <Card.Divider />
-        <View style={styles.info}>
-          <Text style={styles.brandName}>{brandName}</Text>
-          <Card.Title>{name}</Card.Title>
-          <Text style={styles.price}>${price}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
+            activeOpacity={1}
+              onPress={() => {
+                navigation.navigate("Watch Details", item.item);
+              }}
+              style={{ flex: 1, marginVertical: 10, marginHorizontal: 5 }}
+            >
+              <View style={styles.watchCard}>
+                <Image
+                  source={{
+                    uri: item.item.image,
+                  }}
+                  width={150}
+                  height={150}
+                  resizeMode="cover"
+                  borderRadius={20}
+                />
+
+                <View style={{ flex: 1, marginVertical: 10 }}>
+                  <Text style={styles.watchName}>{item.item.watchName}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={styles.watchPrice}>${item.item.price}</Text>
+
+                    <TouchableOpacity onPress={() =>{
+                      onToggleFavorite(item.item)
+                    }}>
+                      <MaterialIcons name="favorite" size={24} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
   );
 };
 
 export default WatchCard;
 
 const styles = StyleSheet.create({
-  Card: {
-    display: "flex",
-    gap: 10,
-    width: width - 30,
-    height: 320,
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 10,
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.26,
-    shadowRadius: 8,
-    elevation: 5,
+  container:{
+      paddingTop: 20,
+      paddingHorizontal: 20,
   },
-  info: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 2,
-    alignItems: "center",
-    marginBottom: 20,
+  watchList:{
+      paddingTop: 10,
+      height: height - 150,
   },
-  brandName: {
-    color: "gray",
-    fontSize: 13,
-    fontWeight: "500",
-  },
-  price: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  image: {
-    width: "50%",
-    height: "auto",
-    objectFit: "contain",
-    aspectRatio: 1, // Maintain aspect ratio
-  },
+watchCard: {
+  justifyContent: "center",
+  alignItems: "center",
+  backgroundColor: "white",
+  borderRadius: 30,
+  padding: 10,
+},
+
+watchName: {
+  fontSize: 16,
+  fontWeight: "500",
+},
+
+watchPrice: {
+  marginTop: 10,
+  fontSize: 12,
+  fontWeight: "400",
+  color: "grey",
+},
 });

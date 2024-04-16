@@ -6,50 +6,83 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { MaterialIcons } from "@expo/vector-icons";
 
-import Header from "../components/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Rating } from "@rneui/themed";
+import { StarRatingDisplay } from "react-native-star-rating-widget";
 
-const WatchDetailsScreen = () => {
+const WatchDetailsScreen = ({ navigation }) => {
   const route = useRoute();
   const watch = route.params;
+  const [numberOfFeedbacks, setNumberOfFeedbacks] = useState(0);
+  const [averageRate, setAverageRate] = useState(0);
   const feedback = watch.feedbacks;
-  const sum = feedback.reduce((acc, item) => acc + item.rating, 0);
-  const averageRate = sum / feedback.length;
-  const formattedAverageRate = averageRate.toFixed(1);
 
+  useEffect(() => {
+    if (feedback != null && feedback.length > 0) {
+      const sum = feedback.reduce((acc, item) => acc + item.rating, 0);
+      const averageRate = sum / feedback.length;
+      const formattedAverageRate = averageRate.toFixed(1);
+      setAverageRate(formattedAverageRate);
+      setNumberOfFeedbacks(feedback.length);
+    }
+  }, [feedback]);
   return (
     <ScrollView>
       <View style={styles.container}>
+        <View style={styles.goBackButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              paddingTop: 15,
+            }}
+          >
+            <MaterialIcons name="arrow-back" size={30} />
+          </TouchableOpacity>
+        </View>
         <View style={styles.imageContainer}>
           <Image source={{ uri: watch.image }} style={styles.coverImage} />
         </View>
         <View style={styles.contentContainer}>
           <View style={styles.textContainer}>
-            <Text style={styles.fontText}>{watch.watchName}</Text>
+            <View style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+              gap: 10,
+            }}>
+              <Text style={styles.fontText}>{watch.watchName}</Text>
+              <TouchableOpacity>
+                <MaterialIcons name="favorite" size={24} color="#ef0505" />
+              </TouchableOpacity>
+            </View>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: "700",
+                color: "#444444",
+              }}
+            >
+              {watch.brandName}
+            </Text>
             <Text style={styles.fontDescription}>{watch.description}</Text>
             <Text style={styles.fontText}>${watch.price}</Text>
           </View>
-          {/* cart button */}
-          <View>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Add to Favorite</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        {/* feedback */}
-        <View style={styles.feedbackContainer}>
-          <Text style={styles.feedbackText}>Feedback</Text>
-          <View>
-            <Text>{formattedAverageRate}/5.0</Text>
-            <Rating
-            readonly
-            fractions={1}
-            ratingCount={5}
-            startingValue={averageRate}
-            />
+          {/* feedback */}
+          <View style={styles.feedbackContainer}>
+            <Text style={styles.feedbackText}>Feedback</Text>
+            <View style={styles.feedbackDetails}>
+              <View style={styles.secondaryfeedbackDetails}>
+                <Text style={styles.feedbackRating}>{averageRate}/5.0</Text>
+                <Text style={styles.secondaryFeedbackRating}>
+                  ({numberOfFeedbacks} reviews)
+                </Text>
+              </View>
+              <StarRatingDisplay rating={averageRate} />
+            </View>
           </View>
         </View>
       </View>
@@ -62,7 +95,6 @@ export default WatchDetailsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
   },
   header: {
     paddingTop: 15,
@@ -70,9 +102,17 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   imageContainer: {
-    paddingTop: 10,
-    height: 320,
+    height: 400,
+    borderRadius: 15,
     width: "100%",
+  },
+  goBackButton: {
+    position: "absolute",
+    top: 50,
+    marginHorizontal: 20,
+    display: "flex",
+    flexDirection: "row",
+    zIndex: 50,
   },
   feedbackContainer: {
     display: "flex",
@@ -85,7 +125,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingVertical: 20,
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    marginTop: -20,
   },
   textContainer: {
     display: "flex",
@@ -95,15 +138,39 @@ const styles = StyleSheet.create({
   },
   fontText: {
     fontSize: 20,
-    // fontFamily: fonts.regular,
+    width: "75%",
     fontWeight: "700",
     color: "#444444",
+  },
+  feedbackDetails: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 20,
+  },
+  secondaryfeedbackDetails: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 5,
   },
   feedbackText: {
     fontSize: 20,
     paddingVertical: 10,
     fontWeight: "700",
     color: "#444444",
+  },
+  feedbackRating: {
+    color: "#efcb15",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  secondaryFeedbackRating: {
+    color: "#000000",
+    fontSize: 10,
+    fontWeight: "700",
   },
   fontDescription: {
     fontSize: 12,
