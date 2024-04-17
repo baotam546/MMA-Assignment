@@ -3,6 +3,7 @@ import React from 'react'
 import HomeScreen from '../screens/HomeScreen';
 import FavoriteScreen from '../screens/FavoriteScreen';
 import WatchDetailsScreen from '../screens/DetailsScreen';
+import FeedbackScreen from '../screens/FeedbackScreen';
 const Stack = createStackNavigator();
 
 const MainStackNavigator = () => {
@@ -22,6 +23,9 @@ const MainStackNavigator = () => {
         }
       }
       name="Watch Details" component={WatchDetailsScreen} />
+      <Stack.Screen
+      name='Feedback' component={FeedbackScreen}
+      />
     </Stack.Navigator>
   )
 }

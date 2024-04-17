@@ -7,20 +7,40 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import watchesData from "../db.json";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import WatchCard from "../components/WatchCard";
 
 const { width, height } = Dimensions.get("window");
 const FavoriteScreen= () => {
   const navigation = useNavigation();
+  const [favoriteList, setFavoriteList] = useState([]);
+  const checkFavoriteList = async () => {
+    try {
+      const favoriteList = await AsyncStorage.getItem("favoriteList");
+      if (favoriteList !== null) {
+        setFavoriteList(JSON.parse(favoriteList));
+      }else {
+        setFavoriteList([]);
+      }
+    } catch (error) {
+      console.error("Error checking favorite:", error);
+    }
+  }
+  useEffect(() => {
+     checkFavoriteList();
+  }, []);
   const watches = watchesData;
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{
+      {favoriteList.length > 0 ? (
+        <>
+        <View style={{
         display: "flex",
         flexDirection: "row",
         justifyContent: "flex-start",
@@ -36,49 +56,21 @@ const FavoriteScreen= () => {
         </Text>
       </View>
       <FlatList
-        data={watches}
-        numColumns={2}
-        style={styles.watchList}
-        renderItem={(item) => (
-          <TouchableOpacity
-          activeOpacity={1}
-            onPress={() => {
-              navigation.navigate("Watch Details", item.item);
-            }}
-            style={{ flex: 1, marginVertical: 10, marginHorizontal: 5 }}
-          >
-            <View style={styles.watchCard}>
-              <Image
-                source={{
-                  uri: item.item.image,
-                }}
-                width={150}
-                height={150}
-                resizeMode="cover"
-                borderRadius={20}
-              />
-
-              <View style={{ flex: 1, marginVertical: 10 }}>
-                <Text style={styles.watchName}>{item.item.watchName}</Text>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text style={styles.watchPrice}>${item.item.price}</Text>
-
-                  <TouchableOpacity>
-                    <MaterialIcons name="favorite" size={24} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+          data={watches}
+          numColumns={2}
+          style={styles.watchList}
+          renderItem={(item) => (
+            <WatchCard item={item}/>
+          )}
+        />
+        </>
+      ):
+      <View>
+        <Text>
+          You have no favorite items.
+        </Text>
+      </View>
+      }
     </SafeAreaView>
   );
 };

@@ -6,7 +6,7 @@
     TouchableOpacity,
     View,
   } from "react-native";
-  import React from "react";
+  import React, { useState } from "react";
   import watchesData from "../db.json";
   import { Dimensions } from "react-native";
   import Header from "../components/Header";
@@ -14,13 +14,16 @@
   import { Image } from "react-native";
   import { useNavigation } from "@react-navigation/native";
 import WatchCard from "../components/WatchCard";
+import storage from "../utils/storage";
 
   const { width, height } = Dimensions.get("window");
   const HomeScreen= () => {
     const navigation = useNavigation();
+    const [isFavorite, setIsFavorite] = useState(false);
     const watches = watchesData; 
-    const toggleFavorite = (watch) => {
 
+    const toggleFavorite = (watch) => {
+      
     }
 
     return (

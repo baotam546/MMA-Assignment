@@ -1,5 +1,6 @@
 import {
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,10 +12,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
+import storage from "../utils/storage";
 
 const WatchDetailsScreen = ({ navigation }) => {
   const route = useRoute();
   const watch = route.params;
+  const navigate = useNavigation();
   const [numberOfFeedbacks, setNumberOfFeedbacks] = useState(0);
   const [averageRate, setAverageRate] = useState(0);
   const feedback = watch.feedbacks;
@@ -46,14 +49,16 @@ const WatchDetailsScreen = ({ navigation }) => {
         </View>
         <View style={styles.contentContainer}>
           <View style={styles.textContainer}>
-            <View style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              gap: 10,
-            }}>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                gap: 10,
+              }}
+            >
               <Text style={styles.fontText}>{watch.watchName}</Text>
               <TouchableOpacity>
                 <MaterialIcons name="favorite" size={24} color="#ef0505" />
@@ -83,6 +88,13 @@ const WatchDetailsScreen = ({ navigation }) => {
               </View>
               <StarRatingDisplay rating={averageRate} />
             </View>
+            <Pressable onPress={() => navigate.navigate("Feedback", watch)}>
+              <View>
+                <Text style={{ fontSize: 15, fontWeight: "500" }}>
+                  View all feedbacks
+                </Text>
+              </View>
+            </Pressable>
           </View>
         </View>
       </View>
