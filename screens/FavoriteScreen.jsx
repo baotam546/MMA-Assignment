@@ -16,11 +16,25 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import WatchCard from "../components/WatchCard";
 import FavoriteCard from "../components/FavoriteCard";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const { width, height } = Dimensions.get("window");
 const FavoriteScreen= () => {
   const [favoriteList, setFavoriteList] = useState([]);
   const focus = useIsFocused();
+  const [visible, setVisible] = useState(false);
+  const toggleDialog = () => {
+    setVisible(!visible);
+  }
+  const clearAll = async()=>{
+    try {
+      await AsyncStorage.removeItem('favorList');
+      setFavoriteList([]);
+      setVisible(!visible);
+    } catch (error) {
+      console.error("Error clearing favorite list:", error);
+    }
+  }
   const checkFavoriteList = async () => {
     try {
       const favoriteStorage = await AsyncStorage.getItem('favorList');
@@ -40,9 +54,7 @@ const FavoriteScreen= () => {
   }, [focus]);
   return (
     <SafeAreaView style={styles.container}>
-      {favoriteList.length > 0 ? (
-        <>
-        <View style={{
+      <View style={{
         display: "flex",
         flexDirection: "row",
         justifyContent: "flex-start",
@@ -57,6 +69,8 @@ const FavoriteScreen= () => {
           This is your favorite item list.
         </Text>
       </View>
+      {favoriteList.length > 0 ? (
+        <>
       <FlatList
           data={favoriteList}
           numColumns={2}
@@ -65,28 +79,21 @@ const FavoriteScreen= () => {
             <FavoriteCard item={item} setFavoriteList={setFavoriteList} favoriteList={favoriteList}/>
           )}
         />
+         <TouchableOpacity
+          style={{display: "flex", alignItems: "flex-end", marginVertical: 20}}
+          onPress={() => toggleDialog()}>
+            <View style={styles.clearButton}>
+              <Text style={styles.clearText}>
+                Clear all 
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <ConfirmDialog visible={visible} toggleDialog={toggleDialog} clearAll={clearAll}/>
         </>
       ):
-      <View>
-        <View style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "flex-start",
-
-        paddingVertical: 20,
-      }}>
-        <Text style={{
-          fontSize: 24,
-          fontWeight: "bold",
-        }}>
-
-          This is your favorite item list.
-        </Text>
-      </View>
         <Text>
           You have no favorite items.
         </Text>
-      </View>
       }
     </SafeAreaView>
   );
@@ -96,12 +103,13 @@ export default FavoriteScreen;
 
 const styles = StyleSheet.create({
     container:{
+      flex:1,
         paddingTop: 20,
         paddingHorizontal: 20,
     },
     watchList:{
         paddingTop: 10,
-        height: height - 150,
+        height: "auto",
     },
   watchCard: {
     justifyContent: "center",
@@ -122,4 +130,15 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "grey",
   },
+  clearButton:{
+    padding :10,
+    backgroundColor: "#ff0000",
+    borderRadius: 20,
+    width: width/3,
+  },
+  clearText:{
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+  }
 });

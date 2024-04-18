@@ -108,12 +108,17 @@ const styles = StyleSheet.create({
   },
   filter: {
     flexDirection: "row",
+    display: "flex",
+    marginBottom: 10,
   },
   filterItem: {
     padding: 10,
     backgroundColor: "white",
     borderRadius: 50,
-    margin: 10,
+    marginHorizontal: 5,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   isActive: {
     backgroundColor: "green",

@@ -47,6 +47,9 @@ const FavoriteStackNavigator = () => {
         }
       }
       name="Watch Details" component={WatchDetailsScreen} />
+      <Stack.Screen
+      name='Feedback' component={FeedbackScreen}
+      />
     </Stack.Navigator>
   )
 }

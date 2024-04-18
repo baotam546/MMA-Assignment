@@ -21,7 +21,6 @@ import {
     const checkIfFavorite = async () => {
       try {
         const favoriteStorage = await AsyncStorage.getItem('favorList');
-        console.log(favoriteStorage)
         if (favoriteStorage !== null) {
           const favorListArray = JSON.parse(favoriteStorage);
           const isFavor = favorListArray.some((watch) => watch === item.item.id);
@@ -58,7 +57,6 @@ import {
         
         await AsyncStorage.setItem('favorList', JSON.stringify(favorListArray));
         setIsFavorite(!isFavorite);
-        console.log(await AsyncStorage.getItem('favorList'))
       } catch (error) {
         console.error("Error toggling favorite:", error);
       }

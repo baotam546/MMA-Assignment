@@ -27,7 +27,6 @@ const WatchDetailsScreen = ({ navigation }) => {
   const checkIfFavorite = async () => {
     try {
       const favoriteStorage = await AsyncStorage.getItem('favorList');
-      console.log(favoriteStorage)
       if (favoriteStorage !== null) {
         const favorListArray = JSON.parse(favoriteStorage);
         const isFavor = favorListArray.some((watchItem) => watchItem === watch.id);
@@ -63,7 +62,6 @@ const WatchDetailsScreen = ({ navigation }) => {
       
       await AsyncStorage.setItem('favorList', JSON.stringify(favorListArray));
       setIsFavorite(!isFavorite);
-      console.log(await AsyncStorage.getItem('favorList'))
     } catch (error) {
       console.error("Error toggling favorite:", error);
     }
@@ -73,6 +71,7 @@ const WatchDetailsScreen = ({ navigation }) => {
     if (feedback != null && feedback.length > 0) {
       const sum = feedback.reduce((acc, item) => acc + item.rating, 0);
       const averageRate = sum / feedback.length;
+      console.log('ave',averageRate);
       const formattedAverageRate = averageRate.toFixed(1);
       setAverageRate(formattedAverageRate);
       setNumberOfFeedbacks(feedback.length);
