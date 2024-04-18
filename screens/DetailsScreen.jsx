@@ -13,6 +13,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
 import storage from "../utils/storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WatchDetailsScreen = ({ navigation }) => {
   const route = useRoute();
@@ -20,7 +21,53 @@ const WatchDetailsScreen = ({ navigation }) => {
   const navigate = useNavigation();
   const [numberOfFeedbacks, setNumberOfFeedbacks] = useState(0);
   const [averageRate, setAverageRate] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+
   const feedback = watch.feedbacks;
+  const checkIfFavorite = async () => {
+    try {
+      const favoriteStorage = await AsyncStorage.getItem('favorList');
+      console.log(favoriteStorage)
+      if (favoriteStorage !== null) {
+        const favorListArray = JSON.parse(favoriteStorage);
+        const isFavor = favorListArray.some((watchItem) => watchItem === watch.id);
+        setIsFavorite(isFavor);
+      } else {
+        setIsFavorite(false);
+      }
+    } catch (error) {
+      console.error("Error checking favorite:", error);
+    }
+  };
+  useEffect(() => {
+    checkIfFavorite();
+  }, []);
+
+  const toggleFavorite = async () => {
+    try {
+      const favoriteStorage = await AsyncStorage.getItem('favorList');
+      let favorListArray = [];
+      if (favoriteStorage !== null) {
+        favorListArray = JSON.parse(favoriteStorage);
+      }
+      
+      if (!isFavorite) {
+        favorListArray.push(watch.id);
+
+      } else {
+        const index = favorListArray.indexOf(watch.id);
+        if (index !== -1) {
+          favorListArray.splice(index, 1);
+        }
+      }
+      
+      await AsyncStorage.setItem('favorList', JSON.stringify(favorListArray));
+      setIsFavorite(!isFavorite);
+      console.log(await AsyncStorage.getItem('favorList'))
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  };
 
   useEffect(() => {
     if (feedback != null && feedback.length > 0) {
@@ -60,8 +107,12 @@ const WatchDetailsScreen = ({ navigation }) => {
               }}
             >
               <Text style={styles.fontText}>{watch.watchName}</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={toggleFavorite}>
+              {isFavorite ? (
                 <MaterialIcons name="favorite" size={24} color="#ef0505" />
+              ) : (
+                <MaterialIcons name="favorite-outline" size={24} />
+              )}
               </TouchableOpacity>
             </View>
             <Text

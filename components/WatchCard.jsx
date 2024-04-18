@@ -8,23 +8,26 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
 const WatchCard = ({ item }) => {
+  const focus = useIsFocused();
   const [isFavorite, setIsFavorite] = useState(false);
   const navigation = useNavigation();
 
   const checkIfFavorite = async () => {
     try {
-      const favorList = await AsyncStorage.getItem("favorList");
-      if (favorList !== null && favorList.length > 0) {
-        console.log(favorList)
-        const favorListArray = JSON.parse(favorList);
-        const isFavor = favorListArray.some((watch) => watch.id === item.id);
+      const favoriteStorage = await AsyncStorage.getItem('favorList');
+      console.log(favoriteStorage)
+      if (favoriteStorage !== null) {
+        const favorListArray = JSON.parse(favoriteStorage);
+        const isFavor = favorListArray.some((watch) => watch === item.item.id);
         setIsFavorite(isFavor);
+      } else {
+        setIsFavorite(false);
       }
     } catch (error) {
       console.error("Error checking favorite:", error);
@@ -32,27 +35,29 @@ const WatchCard = ({ item }) => {
   };
   useEffect(() => {
     checkIfFavorite();
-  }, []);
+  }, [focus]);
 
   const toggleFavorite = async () => {
     try {
-      let favorList = await AsyncStorage.getItem("favorList");
-      if (favorList === null) {
-        favorList = [];
-      } else {
-        favorList = JSON.parse(favorList);
+      const favoriteStorage = await AsyncStorage.getItem('favorList');
+      let favorListArray = [];
+      if (favoriteStorage !== null) {
+        favorListArray = JSON.parse(favoriteStorage);
       }
+      
+      if (!isFavorite) {
+        favorListArray.push(item.item.id);
 
-      const index = favorList.findIndex((watch) => watch.id === item.id);
-      if (index !== -1) {
-        favorList.splice(index, 1); // Remove from favorites
-        setIsFavorite(false);
       } else {
-        favorList.push(item); // Add to favorites
-        setIsFavorite(true);
+        const index = favorListArray.indexOf(item.item.id);
+        if (index !== -1) {
+          favorListArray.splice(index, 1);
+        }
       }
-
-      await AsyncStorage.setItem("favorList", JSON.stringify(favorList));
+      
+      await AsyncStorage.setItem('favorList', JSON.stringify(favorListArray));
+      setIsFavorite(!isFavorite);
+      console.log(await AsyncStorage.getItem('favorList'))
     } catch (error) {
       console.error("Error toggling favorite:", error);
     }
@@ -78,7 +83,7 @@ const WatchCard = ({ item }) => {
         />
 
         <View style={{ flex: 1, marginVertical: 10 }}>
-          <Text style={styles.watchName}>{item.item.watchName}</Text>
+          <Text style={styles.watchName} numberOfLines={2}>{item.item.watchName}</Text>
           <View
             style={{
               flexDirection: "row",
@@ -124,12 +129,13 @@ const styles = StyleSheet.create({
   watchName: {
     fontSize: 16,
     fontWeight: "500",
+    marginBottom: 15
   },
 
   watchPrice: {
     marginTop: 10,
-    fontSize: 12,
-    fontWeight: "400",
+    fontSize: 15,
+    fontWeight: "700",
     color: "grey",
   },
 });

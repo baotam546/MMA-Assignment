@@ -5,7 +5,6 @@ import { StarRatingDisplay } from 'react-native-star-rating-widget';
 const FeedbackCard = ({watch}) => {
   const author = watch.item.author;
   const rating = watch.item.rating;
-  console.log(rating);
   const date = watch.item.date;
   const comment = watch.item.comment;
   return (
@@ -15,7 +14,7 @@ const FeedbackCard = ({watch}) => {
         <Text style={{fontWeight:'bold'}}>{author}</Text>
       </View>
       <View>
-      <StarRatingDisplay display={2.0}/>
+      <StarRatingDisplay display={5}/>
       </View>
       <View>
         <Text>

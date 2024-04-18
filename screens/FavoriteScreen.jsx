@@ -12,30 +12,32 @@ import watchesData from "../db.json";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import WatchCard from "../components/WatchCard";
+import FavoriteCard from "../components/FavoriteCard";
 
 const { width, height } = Dimensions.get("window");
 const FavoriteScreen= () => {
-  const navigation = useNavigation();
   const [favoriteList, setFavoriteList] = useState([]);
+  const focus = useIsFocused();
   const checkFavoriteList = async () => {
     try {
-      const favoriteList = await AsyncStorage.getItem("favoriteList");
-      if (favoriteList !== null) {
-        setFavoriteList(JSON.parse(favoriteList));
-      }else {
+      const favoriteStorage = await AsyncStorage.getItem('favorList');
+      if (favoriteStorage !== null) {
+        const favorListArray = JSON.parse(favoriteStorage);
+        const watchList = watchesData.filter((watch) => favorListArray.includes(watch.id));
+        setFavoriteList(watchList);
+      } else {
         setFavoriteList([]);
       }
     } catch (error) {
       console.error("Error checking favorite:", error);
     }
-  }
+  };
   useEffect(() => {
-     checkFavoriteList();
-  }, []);
-  const watches = watchesData;
+    checkFavoriteList();
+  }, [focus]);
   return (
     <SafeAreaView style={styles.container}>
       {favoriteList.length > 0 ? (
@@ -56,16 +58,31 @@ const FavoriteScreen= () => {
         </Text>
       </View>
       <FlatList
-          data={watches}
+          data={favoriteList}
           numColumns={2}
           style={styles.watchList}
           renderItem={(item) => (
-            <WatchCard item={item}/>
+            <FavoriteCard item={item} setFavoriteList={setFavoriteList} favoriteList={favoriteList}/>
           )}
         />
         </>
       ):
       <View>
+        <View style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-start",
+
+        paddingVertical: 20,
+      }}>
+        <Text style={{
+          fontSize: 24,
+          fontWeight: "bold",
+        }}>
+
+          This is your favorite item list.
+        </Text>
+      </View>
         <Text>
           You have no favorite items.
         </Text>
