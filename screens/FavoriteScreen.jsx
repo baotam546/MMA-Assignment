@@ -1,7 +1,6 @@
 import {
   Dimensions,
   FlatList,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,9 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import watchesData from "../db.json";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Image } from "react-native";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused  } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import WatchCard from "../components/WatchCard";
 import FavoriteCard from "../components/FavoriteCard";
@@ -79,7 +76,8 @@ const FavoriteScreen= () => {
             <FavoriteCard item={item} setFavoriteList={setFavoriteList} favoriteList={favoriteList}/>
           )}
         />
-         <TouchableOpacity
+         {favoriteList.length > 1 &&(
+          <TouchableOpacity
           style={{display: "flex", alignItems: "flex-end", marginVertical: 20}}
           onPress={() => toggleDialog()}>
             <View style={styles.clearButton}>
@@ -88,6 +86,7 @@ const FavoriteScreen= () => {
               </Text>
             </View>
           </TouchableOpacity>
+         )}
           <ConfirmDialog visible={visible} toggleDialog={toggleDialog} clearAll={clearAll}/>
         </>
       ):
