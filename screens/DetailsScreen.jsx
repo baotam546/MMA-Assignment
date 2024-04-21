@@ -10,7 +10,7 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
 import storage from "../utils/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,6 +22,7 @@ const WatchDetailsScreen = ({ navigation }) => {
   const [numberOfFeedbacks, setNumberOfFeedbacks] = useState(0);
   const [averageRate, setAverageRate] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const focus = useIsFocused();
 
   const feedback = watch.feedbacks;
   const checkIfFavorite = async () => {
@@ -40,7 +41,7 @@ const WatchDetailsScreen = ({ navigation }) => {
   };
   useEffect(() => {
     checkIfFavorite();
-  }, []);
+  }, [focus]);
 
   const toggleFavorite = async () => {
     try {
